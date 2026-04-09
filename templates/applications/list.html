@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Candidatures</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">JobTracker</span>
+            <form action="{% url 'logout' %}" method="post" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light btn-sm">Se déconnecter</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-secondary">Tableau de Bord <small class="text-muted fs-5">({{ user.username }})</small></h2>
+            <a href="{% url 'application_create' %}" class="btn btn-primary shadow-sm">+ Ajouter une candidature</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Entreprise</th>
+                            <th>Poste</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in apps %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">{{ app.company }}</td>
+                            <td>{{ app.position }}</td>
+                            <td class="text-muted">{{ app.date_applied }}</td>
+                            <td>
+                                <span class="badge rounded-pill bg-info text-dark">{{ app.get_status_display }}</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'application_update' app.id %}"
+                                    class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                <a href="{% url 'application_delete' app.id %}"
+                                    class="btn btn-sm btn-outline-danger ms-1"
+                                    onclick="return confirm('Supprimer ?')">Supprimer</a>
+                            </td>
+                            <td class="text-end pe-4">
+                                {% if app.doit_relancer %}
+                                <a href="{% url 'mark_as_relanced' app.id %}"
+                                    class="btn btn-sm btn-warning shadow-sm me-1"
+                                    title="Marquer comme relancé aujourd'hui">
+                                    🔔 Relancer
+                                </a>
+                                {% endif %}
+
+                                <a href="{% url 'application_update' app.id %}"
+                                    class="btn btn-sm btn-outline-secondary">Modifier</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">Aucune candidature pour le moment.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
